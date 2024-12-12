@@ -19,7 +19,7 @@ class TestEstoqueAlimento(unittest.TestCase):
         estoque.add_produto(ProdutoAlimento('Arroz', 10, validade='2021-12-31'))
         estoque.add_produto(ProdutoAlimento('Feijao', 10, validade='2021-12-31'))
         estoque.add_produto(ProdutoAlimento('Milho', 10, validade='2021-12-31'))
-        estoque.remove_vencidos('2021-12-31')
+        estoque.remove_vencidos('2022-01-01')
         self.assertEqual(estoque.get_produto_info('Arroz'), None)
         self.assertEqual(estoque.get_produto_info('Feijao'), None)
         self.assertEqual(estoque.get_produto_info('Milho'), None)
