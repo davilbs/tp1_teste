@@ -1,4 +1,6 @@
 from produto import Produto, ProdutoAlimento
+from typing import Dict
+import datetime
 
 class Estoque:
     def __init__(self):
@@ -37,6 +39,8 @@ class Estoque:
         return self._produtos.get(nome, None)
 
 class EstoqueAlimento(Estoque):
+    _produtos: Dict[str, ProdutoAlimento]
+
     def __init__(self):
         super().__init__()
         self._produtos = {}
@@ -49,8 +53,9 @@ class EstoqueAlimento(Estoque):
     def get_produto_info(self, nome):
         return self._produtos.get(nome, None)
     
-    def remove_vencidos(self, data):
-        for produto in self._produtos.values():
-            if produto.validade and produto.validade < data:
+    def remove_vencidos(self, data: str):
+        curr_produtos = list(self._produtos.values())
+        for produto in curr_produtos:
+            if produto.validade and produto.validade < datetime.datetime.strptime(data, '%Y-%m-%d').date():
                 del self._produtos[produto.nome]
         return True
