@@ -1,21 +1,37 @@
-class EstoqueAlimento:
-    def __init__(self, vegan=False):
-        self.vegan = vegan
-        self.alimentos = {}
+from produto import Produto, ProdutoAlimento
 
-    def buy_alimento(self, alimento, value=1):
-        if alimento not in self.alimentos:
-            self.alimentos[alimento] = 0
-        self.alimentos[alimento] += value
+class Estoque:
+    def __init__(self):
+        self._estoque = {}
+        self._produtos = {}
+
+    def buy_produto(self, produto, amount=1):
+        if produto not in self._estoque:
+            self._estoque[produto] = 0
+        self._estoque[produto] += amount
         return True
 
-    def sell_alimento(self, alimento, value=1):
-        if alimento not in self.alimentos:
+    def sell_produto(self, produto, amount=1):
+        if produto not in self._estoque:
             return False
-        if self.alimentos[alimento] == 0:
+        if self._estoque[produto] == 0:
             return False
-        self.alimentos[alimento] -= value
+        self._estoque[produto] -= amount
         return True
     
-    def get_alimento(self, alimento):
-        return self.alimentos.get(alimento, 0)
+    def add_produto(self, produto: Produto):
+        if produto.nome not in self._produtos:
+            self._produtos[produto.nome] = produto
+        return True
+    
+    def remove_produto(self, produto: Produto):
+        if produto.nome in self._produtos:
+            del self._produtos[produto.nome]
+            return True
+        return False
+    
+    def get_produto_amount(self, produto):
+        return self._estoque.get(produto, 0)
+    
+    def get_produto_info(self, nome):
+        return self._produtos.get(nome, None)
