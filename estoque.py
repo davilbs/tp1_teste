@@ -24,7 +24,8 @@ class Estoque:
     def add_produto(self, produto: Produto):
         if produto.nome not in self._produtos:
             self._produtos[produto.nome] = produto
-        return True
+            return True
+        return False
     
     def remove_produto(self, produto: Produto):
         if produto.nome in self._produtos:
