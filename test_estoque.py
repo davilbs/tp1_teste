@@ -11,7 +11,7 @@ class TestEstoque(unittest.TestCase):
     def test_add_one_product(self):
         estoque = Estoque()
         estoque.add_produto(Produto('Vassoura', 10))
-        self.assertEqual(str(estoque.get_produto_info('Vassoura')), "Vassoura - R$ 10.00")
+        self.assertEqual(str(estoque.get_produto_info('Vassoura')), "Vassoura - R$ 10.00 - Categoria: Sem categoria - Marcas: Nenhuma marca")
 
     def test_remove_one_product(self):
         estoque = Estoque()
