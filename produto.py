@@ -59,7 +59,7 @@ class Produto:
             self.marcas.remove(marca)
             self.registrar_historico(f'Marca {marca} removida do produto')
         else:
-            raise ValueError(f'Marca {marca} nã0 encontrada no produto')
+            raise KeyError(f'Marca {marca} nã0 encontrada no produto')
 
 
 class ProdutoAlimento(Produto):

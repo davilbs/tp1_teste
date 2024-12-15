@@ -2,7 +2,8 @@ from estoque import Estoque
 from produto import Produto
 
 class Business():
-    def __init__(self, estoque: Estoque, margin=0.1):
+    def __init__(self, nome, estoque: Estoque, margin=0.1):
+        self.nome = nome
         self._estoque = estoque
         self._transactions = []
         self._margin = margin
@@ -45,8 +46,10 @@ class Business():
         self.buy_produto(produto.nome, amount)
         return self.compute_transaction(produto.nome, amount)
 
-        
+    def get_produto_amount(self, nome):
+        return self._estoque.get_produto_amount(nome)
     
     def sell_produto(self, nome, amount):
-        self.compute_transaction(nome, amount, 'sell')
-        return self._estoque.sell_produto(nome, amount)
+        if self._estoque.sell_produto(nome, amount):
+            return self.compute_transaction(nome, amount, 'sell')
+        return False
