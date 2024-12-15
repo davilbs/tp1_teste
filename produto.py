@@ -83,4 +83,6 @@ class ProdutoAlimento(Produto):
     
     def set_validade(self, validade: str):
         validade = datetime.datetime.strptime(validade, '%Y-%m-%d').date()
+        if validade < datetime.date.today():
+            raise ValueError('A validade não pode ser anterior à data atual.')
         self.validade = validade
