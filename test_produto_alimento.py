@@ -11,7 +11,7 @@ class TestProdutoAlimento(unittest.TestCase):
         produto = ProdutoAlimento('Vassoura', 10, vegano=True)
         self.assertEqual(str(produto), "Vassoura - R$ 10.00 vegano")
     
-    def test_set_valdade(self):
+    def test_set_validade(self):
         produto = ProdutoAlimento('Vassoura', 10)
         produto.set_validade('2021-12-31')
         self.assertEqual(str(produto), "Vassoura - R$ 10.00 - 2021-12-31")
