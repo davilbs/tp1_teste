@@ -70,4 +70,4 @@ class TestBusiness(unittest.TestCase):
         business = Business('Loja de vassouras', estoque=Estoque())
         produto = Produto('Vassoura', 10)
         business.buy_produto(produto, 10)
-        self.assertEqual(business.listar_estoque(), ['Vassoura - R$ 10.00 - Categoria: Sem categoria - Marcas: Nenhuma marca'])
+        self.assertEqual(business.listar_estoque(), ['Nome: Vassoura - Preço: R$ 10.00 - Categoria: Sem categoria - Marcas: Nenhuma marca'])
