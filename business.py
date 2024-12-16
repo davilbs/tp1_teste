@@ -2,7 +2,7 @@ from estoque import Estoque
 from produto import Produto
 
 class Business():
-    def __init__(self, nome, estoque: Estoque, margin=0.1):
+    def __init__(self, nome, estoque: Estoque = Estoque(), margin=0.1):
         self.nome = nome
         self._estoque = estoque
         self._transactions = []
@@ -36,17 +36,19 @@ class Business():
             self._transactions.append((buy_price, amount))
 
         return True
-    
-    def buy_produto(self, produto: str, amount=1):
-        self._estoque.buy_produto(produto, amount)
-        return self.compute_transaction(produto, amount)
 
-    def buy_produto(self, produto: Produto, amount=1):
-        self._estoque.add_produto(produto)
-        self.buy_produto(produto.nome, amount)
-        return self.compute_transaction(produto.nome, amount)
+    def buy_produto(self, produto: Produto | str, amount=1):
+        if isinstance(produto, Produto):
+            self._estoque.add_produto(produto)
+            if self._estoque.buy_produto(produto.nome, amount):
+                self.compute_transaction(produto.nome, amount)
+                return True
+        else:
+            if self._estoque.buy_produto(produto, amount):
+                return self.compute_transaction(produto, amount)
+        return False
 
-    def get_produto_amount(self, nome):
+    def get_produto_amount(self, nome) -> int:
         return self._estoque.get_produto_amount(nome)
     
     def sell_produto(self, nome, amount):

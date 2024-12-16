@@ -7,10 +7,15 @@ class Estoque:
         self._estoque = {}
         self._produtos = {}
 
-    def buy_produto(self, produto, amount=1):
-        if produto not in self._estoque:
-            self._estoque[produto] = 0
-        self._estoque[produto] += amount
+    def buy_produto(self, produto: Produto | str, amount=1):
+        if isinstance(produto, Produto):
+            if produto not in self._estoque:
+                self._estoque[produto.nome] = 0
+            self._estoque[produto.nome] += amount
+        else:
+            if self.get_produto_info(produto) is None:
+                return False
+            self._estoque[produto] += amount
         return True
 
     def sell_produto(self, produto, amount=1):
@@ -24,6 +29,7 @@ class Estoque:
     def add_produto(self, produto: Produto):
         if produto.nome not in self._produtos:
             self._produtos[produto.nome] = produto
+            self._estoque[produto.nome] = 0
             return True
         return False
     

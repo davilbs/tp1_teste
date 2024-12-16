@@ -26,9 +26,7 @@ class Produto:
         return f'Produto(nome={self.nome}, preco={self.preco:.2f}, categoria={self.categoria}, marcas={self.marcas})'
     
     def registrar_historico(self, mensagem: str):
-        metodo_chamador = inspect.stack()[1].function
-        data_hora = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.historico.append(f"{data_hora} - Método: [{metodo_chamador}] - Ação: {mensagem}")
+        self.historico.append(mensagem)
     
     def alterar_categoria(self, nova_categoria: str):
         if not nova_categoria:
