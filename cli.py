@@ -1,12 +1,21 @@
 from sys import stdin, stdout
 from estoque import Estoque, EstoqueAlimento
 from produto import Produto, ProdutoAlimento
+import os
 from business import Business
 
 class CLI:
     def __init__(self, infile=stdin, outfile=stdout) -> None:
         self.infile = infile
         self.outfile = outfile
+        self._atty = self.infile.isatty()
+
+        if not self._atty:
+            pos = self.infile.tell()
+            self.infile.seek(os.SEEK_END)
+            self._final_pos = self.infile.tell()
+            self._final_pos = self.infile.tell()
+            self.infile.seek(pos)
     
     def print(self, *values: object, sep: str | None =" ", end: str | None = "\n", flush: bool = False) -> None:
         print(*values, sep=sep, end=end, file=self.outfile, flush=flush)
@@ -14,8 +23,13 @@ class CLI:
     def print_opcao_invalida(self) -> None:
         self.print("Opção inválida. Por favor, escolha uma das opções disponíveis.")
     
-    def input(self, prompt: object = "> ") -> str:
+    def input(self, prompt: object = "> ") -> str | None:
         self.print(prompt, sep='', end='', flush=True)
+
+        if not self._atty:
+            if self.infile.tell() == self._final_pos:
+                raise EOFError
+        
         return self.infile.readline()[:-1]
 
     def start(self):
@@ -23,6 +37,11 @@ class CLI:
             self.print("Seja bem vindo ao sistema de gestão de estoques. Pressione Ctrl+C a qualquer\n"
                        "momento para encerrar o programa.\n")
             tipo_estoque = self.tela_escolher_tipo_estoque()
+            # Se o tipo_estoque é None, é porque ele teve um EOFError - chegou ao fim da entrada sem ler um valor válido.
+            if tipo_estoque is None:
+                self.print("\nEncerrando...")
+                return
+            
             self.handle_criacao_estoque(tipo_estoque)
             self.tela_info_funcionamento()
 
@@ -41,9 +60,18 @@ class CLI:
                             self.tela_comprar_produtos()
                         except ValueError as ex:
                             self.print("\[ERRO]", *ex.args)    
+                    case 5:
+                        sucesso = self.tela_consultar_produto()
+                        if not sucesso:
+                            self.print("\nEncerrando...")
+                            return
                     case 7:
                         self.tela_ajuda_menu_principal()
+                        continue
         except KeyboardInterrupt:
+            self.print("\nEncerrando...")
+            return
+        except EOFError:
             self.print("\nEncerrando...")
             return
         except Exception as ex:
@@ -53,29 +81,32 @@ class CLI:
             return
             
 
-    def tela_escolher_tipo_estoque(self) -> int:
+    def tela_escolher_tipo_estoque(self) -> int | None:
         tipo = None
 
-        while True:
-            self.print("\n[TIPO DE ESTOQUE]")
-            self.print("Escolha o seu tipo de estoque:")
-            self.print("1) Estoque genérico: armazena produtos de forma genérica.")
-            self.print("2) Estoque de alimentos: possui funcionalidades específicas para alimentos,\n"
-                       "   como remover todos os produtos vencidos.")
-            
-            string = self.input().strip()
-            match string:
-                case "1":
-                    tipo = 1
-                    self.print("Tipo escolhido: Estoque Genérico")
-                    break
-                case "2":
-                    tipo = 2
-                    self.print("Tipo escolhido: Estoque de alimentos")
-                    break
-                case _:
-                    self.print_opcao_invalida()
-                    continue
+        try:
+            while True:
+                self.print("\n[TIPO DE ESTOQUE]")
+                self.print("Escolha o seu tipo de estoque:")
+                self.print("1) Estoque genérico: armazena produtos de forma genérica.")
+                self.print("2) Estoque de alimentos: possui funcionalidades específicas para alimentos,\n"
+                        "   como remover todos os produtos vencidos.")
+                
+                string = self.input().strip()
+                match string:
+                    case "1":
+                        tipo = 1
+                        self.print("Tipo escolhido: Estoque Genérico")
+                        break
+                    case "2":
+                        tipo = 2
+                        self.print("Tipo escolhido: Estoque de alimentos")
+                        break
+                    case _:
+                        self.print_opcao_invalida()
+                        continue
+        except EOFError:
+            return None
         
         return tipo
     
@@ -202,10 +233,27 @@ class CLI:
         self.print("\n[REMOVER PRODUTOS DO CATÁLOGO - MENU PRINCIPAL]")
 
     
-    # def tela_consultar_produto(self):
-    #     while True:
-    #         self.print("\n[CONSULTAR PRODUTO]")
-    #         self.print("Digite o nome do produto que deseja consultar, :")
-    #         nome = self.input()
-    #         self.estoque.get_produto_info(nome)
+    def tela_consultar_produto(self) -> bool:
+        try:
+            while True:
+                self.print("\n[CONSULTAR PRODUTO]")
+                self.print("Digite o nome do produto que deseja consultar, ou pressione ENTER para voltar:")
+                nome = self.input()
+                match nome:
+                    case "":
+                        break
+                    case _:
+                        produto = self.estoque.get_produto_info(nome)
+                        if produto is None:
+                            self.print("O produto procurado não existe no catálogo.", flush=True)
+                            continue
+
+                        self.print(str(produto))
+                        qtd = self.estoque.get_produto_amount(produto)
+                        self.print(f"Quantidade em estoque: {qtd}")
+            return True
+        except EOFError:
+            return False
+                    
+
 
