@@ -244,13 +244,13 @@ class CLI:
                     case "":
                         break
                     case _:
-                        produto = self.estoque.get_produto_info(nome)
+                        produto = self.business.get_produto_info(nome)
                         if produto is None:
                             self.print("O produto procurado não existe no catálogo.", flush=True)
                             continue
 
                         self.print(str(produto))
-                        qtd = self.estoque.get_produto_amount(produto)
+                        qtd = self.business.get_produto_amount(nome)
                         self.print(f"Quantidade em estoque: {qtd}")
             return True
         except EOFError:
