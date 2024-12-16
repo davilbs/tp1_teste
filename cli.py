@@ -9,6 +9,7 @@ class CLI:
         self.infile = infile
         self.outfile = outfile
         self._atty = self.infile.isatty()
+        self.business = Business("")
 
         if not self._atty:
             pos = self.infile.tell()
@@ -65,6 +66,8 @@ class CLI:
                         if not sucesso:
                             self.print("\nEncerrando...")
                             return
+                    case 6:
+                        self.tela_exibir_catalogo()
                     case 7:
                         self.tela_ajuda_menu_principal()
                         continue
@@ -120,7 +123,7 @@ class CLI:
                 self.is_estoque_alimento = True
             case _:
                 raise Exception("O tipo de estoque recebido não é um tipo válido.")
-        self.business = Business("", self.estoque)
+        self.business.set_estoque(self.estoque)
 
     def tela_info_funcionamento(self) -> None:
         self.print("\n[FUNCIONAMENTO DO SISTEMA]")
@@ -233,7 +236,16 @@ class CLI:
     def tela_vender_produtos(self):
         self.print("\n[REMOVER PRODUTOS DO CATÁLOGO - MENU PRINCIPAL]")
 
-    
+    def tela_exibir_catalogo(self):
+        lista_produtos = self.business.listar_estoque()
+
+        if len(lista_produtos) == 0:
+            self.print("O catálogo está vazio.")
+            return
+        
+        self.print("[CATÁLOGO]")
+        self.print(*[f"- {prod}" for prod in self.business.listar_estoque()], sep="\n")
+
     def tela_consultar_produto(self) -> bool:
         try:
             while True:

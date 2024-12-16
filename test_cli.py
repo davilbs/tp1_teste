@@ -78,5 +78,10 @@ class TestCLI(unittest.TestCase):
 
         saida = self.output.getvalue()
         self.assertGreater(saida.find("AJUDA - MENU PRINCIPAL"), -1)
+    
+    def test_tela_exibir_catalogo_vazio(self):
+        self.CLI.tela_exibir_catalogo()
+        saida = self.output.getvalue()
+        self.assertGreater(saida.find("O catálogo está vazio"), -1)
 
 
