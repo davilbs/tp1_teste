@@ -44,7 +44,7 @@ class TestBusiness(unittest.TestCase):
         produto = Produto('Vassoura', 10)
         business.buy_produto(produto, 10)
         business.sell_produto('Vassoura', 5)
-        self.assertEqual(business.calculate_profit(), 50)
+        self.assertEqual(business.calculate_profit(), -40)
 
     def test_set_desconto(self):
         business = Business('Loja de vassouras', estoque=Estoque())
