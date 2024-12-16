@@ -52,14 +52,14 @@ class CLI:
                         try:
                             self.tela_adicionar_produtos()
                         except ValueError as ex:
-                            self.print("\[ERRO]", *ex.args)
+                            self.print("[ERRO]", *ex.args)
                     case 2:
                         self.tela_remover_produtos()
                     case 3:
                         try:
                             self.tela_comprar_produtos()
                         except ValueError as ex:
-                            self.print("\[ERRO]", *ex.args)    
+                            self.print("[ERRO]", *ex.args)    
                     case 5:
                         sucesso = self.tela_consultar_produto()
                         if not sucesso:
@@ -172,6 +172,7 @@ class CLI:
             "7) Ajuda: Exibe este painel de ajuda."
         )
         self.input("Pressione ENTER para prosseguir...")
+        return 
 
     def tela_adicionar_produtos(self):
         self.print("\n[ADICIONAR PRODUTOS AO CATÁLOGO - MENU PRINCIPAL]")
