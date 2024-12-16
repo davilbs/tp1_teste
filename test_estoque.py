@@ -37,3 +37,21 @@ class TestEstoque(unittest.TestCase):
         estoque = Estoque()
         estoque.add_produto(Produto('Vassoura', 10))
         self.assertFalse(estoque.sell_produto('Vassoura', 5))
+
+    def test_get_estoque_size(self):
+        estoque = Estoque()
+        estoque.add_produto(Produto('Vassoura', 10))
+        estoque.add_produto(Produto('Pá', 10))
+        estoque.buy_produto('Vassoura', 10)
+        estoque.buy_produto('Pá', 5)
+        self.assertEqual(estoque.get_estoque_size(), 15)
+
+    def test_get_estoque(self):
+        estoque = Estoque()
+        vassoura = Produto('Vassoura', 10)
+        pa = Produto('Pá', 10)
+        estoque.add_produto(vassoura)
+        estoque.add_produto(pa)
+        estoque.buy_produto('Vassoura', 10)
+        estoque.buy_produto('Pá', 5)
+        self.assertEqual(estoque.get_estoque(), [vassoura, pa])

@@ -51,6 +51,12 @@ class Estoque:
             total += self._estoque[produto]
         return total
     
+    def get_estoque(self) -> list[Produto]:
+        lista_produtos = []
+        for produto in self._produtos:
+            lista_produtos.append(self._produtos[produto])
+        return lista_produtos
+    
 class EstoqueAlimento(Estoque):
     _produtos: Dict[str, ProdutoAlimento]
 

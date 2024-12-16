@@ -65,3 +65,9 @@ class TestBusiness(unittest.TestCase):
         business = Business('Loja de vassouras', estoque=Estoque())
         with self.assertRaises(ValueError):
             business.alterar_nome('')
+
+    def test_listar_estoque(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        produto = Produto('Vassoura', 10)
+        business.buy_produto(produto, 10)
+        self.assertEqual(business.listar_estoque(), ['Vassoura - R$ 10.00 - Categoria: Sem categoria - Marcas: Nenhuma marca'])
