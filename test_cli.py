@@ -12,11 +12,7 @@ class TestCLI(unittest.TestCase):
         self.input.write("1\n")
         self.input.seek(0)
 
-        tipo = 0
-        try:
-            tipo = self.CLI.tela_escolher_tipo_estoque()
-        except EOFError:
-            pass
+        tipo = self.CLI.tela_escolher_tipo_estoque()
 
         saida = self.output.getvalue()
         self.assertEqual(tipo, 1)
@@ -38,7 +34,7 @@ class TestCLI(unittest.TestCase):
         self.input.seek(0)
 
         self.CLI.tela_escolher_tipo_estoque()
-        
+
         saida = self.output.getvalue()
         self.assertGreater(saida.find("Opção inválida. Por favor, escolha uma das opções disponíveis."), -1)
     
