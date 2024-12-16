@@ -26,13 +26,9 @@ class TestCLI(unittest.TestCase):
         self.input.write("2\n")
         self.input.seek(0)
 
-        tipo = 0
-        try:
-            tipo = self.CLI.tela_escolher_tipo_estoque()
-        except EOFError:
-            pass
-
+        tipo = self.CLI.tela_escolher_tipo_estoque()
         saida = self.output.getvalue()
+
         self.assertEqual(tipo, 2)
         self.assertGreater(saida.find("Tipo escolhido: Estoque de alimentos"), -1)
 
@@ -41,11 +37,8 @@ class TestCLI(unittest.TestCase):
         self.input.write("5\n1\n")
         self.input.seek(0)
 
-        try:
-            self.CLI.tela_escolher_tipo_estoque()
-        except EOFError:
-            pass
-
+        self.CLI.tela_escolher_tipo_estoque()
+        
         saida = self.output.getvalue()
         self.assertGreater(saida.find("Opção inválida. Por favor, escolha uma das opções disponíveis."), -1)
     
@@ -71,4 +64,23 @@ class TestCLI(unittest.TestCase):
 
         saida = self.output.getvalue()
         self.assertGreater(saida.find("O produto procurado não existe no catálogo."), -1)
+    
+    def test_tela_info_funcionamento(self):
+        self.input.write("\n")
+        self.input.seek(0)
+
+        self.CLI.tela_info_funcionamento()
+
+        saida = self.output.getvalue()
+        self.assertGreater(saida.find("FUNCIONAMENTO DO SISTEMA"), -1)
+
+    def test_tela_ajuda_menu_principal(self):
+        self.input.write("\n")
+        self.input.seek(0)
+
+        self.CLI.tela_ajuda_menu_principal()
+
+        saida = self.output.getvalue()
+        self.assertGreater(saida.find("AJUDA - MENU PRINCIPAL"), -1)
+
 
