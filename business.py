@@ -42,7 +42,7 @@ class Business():
         # O preço de compra é o preço de venda + a margem
         return -(preco * (1 - self._margin))
     
-    def compute_transaction(self, nome, amount, ttype='buy'):
+    def compute_transaction(self, nome: int, amount: int, ttype='buy'):
         produto = self.get_produto_info(nome)
         if produto is None:
             return False
@@ -59,7 +59,7 @@ class Business():
 
         return True
 
-    def buy_produto(self, produto: Produto | str, amount=1):
+    def buy_produto(self, produto: Produto | str, amount: int = 0):
         if isinstance(produto, Produto):
             self._estoque.add_produto(produto)
             if self._estoque.buy_produto(produto.nome, amount):
@@ -70,10 +70,10 @@ class Business():
                 return self.compute_transaction(produto, amount)
         return False
 
-    def get_produto_amount(self, nome) -> int:
+    def get_produto_amount(self, nome: str) -> int:
         return self._estoque.get_produto_amount(nome)
     
-    def sell_produto(self, nome, amount):
+    def sell_produto(self, nome: str, amount: int):
         if self._estoque.sell_produto(nome, amount):
             return self.compute_transaction(nome, amount, 'sell')
         return False
