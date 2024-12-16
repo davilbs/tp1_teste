@@ -5,7 +5,8 @@ from produto import Produto
 class TestEstoque(unittest.TestCase):
     def test_buy_one_product(self):
         estoque = Estoque()
-        estoque.buy_produto('Vassoura', 10)
+        produto = Produto('Vassoura', 10)
+        estoque.buy_produto(produto, 10)
         self.assertEqual(estoque.get_produto_amount('Vassoura'), 10)
 
     def test_add_one_product(self):
