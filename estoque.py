@@ -39,12 +39,24 @@ class Estoque:
             return True
         return False
     
-    def get_produto_amount(self, produto):
+    def get_produto_amount(self, produto) -> int:
         return self._estoque.get(produto, 0)
     
-    def get_produto_info(self, nome):
+    def get_produto_info(self, nome) -> Produto | None:
         return self._produtos.get(nome, None)
 
+    def get_estoque_size(self) -> int:
+        total = 0
+        for produto in self._produtos:
+            total += self._estoque[produto]
+        return total
+    
+    def get_estoque(self) -> list[Produto]:
+        lista_produtos = []
+        for produto in self._produtos:
+            lista_produtos.append(self._produtos[produto])
+        return lista_produtos
+    
 class EstoqueAlimento(Estoque):
     _produtos: Dict[str, ProdutoAlimento]
 
