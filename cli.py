@@ -1,6 +1,7 @@
 from sys import stdin, stdout
 from estoque import Estoque, EstoqueAlimento
 from produto import Produto, ProdutoAlimento
+from business import Business
 
 class CLI:
     def __init__(self, infile=stdin, outfile=stdout) -> None:
@@ -15,7 +16,7 @@ class CLI:
     
     def input(self, prompt: object = "> ") -> str:
         self.print(prompt, sep='', end='', flush=True)
-        return self.infile.readline()
+        return self.infile.readline()[:-1]
 
     def start(self):
         try:
@@ -28,7 +29,19 @@ class CLI:
             while True:
                 opcao = self.tela_menu_principal()
                 match opcao:
-                    case 6:
+                    case 1:
+                        try:
+                            self.tela_adicionar_produtos()
+                        except ValueError as ex:
+                            self.print("\[ERRO]", *ex.args)
+                    case 2:
+                        self.tela_remover_produtos()
+                    case 3:
+                        try:
+                            self.tela_comprar_produtos()
+                        except ValueError as ex:
+                            self.print("\[ERRO]", *ex.args)    
+                    case 7:
                         self.tela_ajuda_menu_principal()
         except KeyboardInterrupt:
             self.print("\nEncerrando...")
@@ -76,7 +89,8 @@ class CLI:
                 self.is_estoque_alimento = True
             case _:
                 raise Exception("O tipo de estoque recebido não é um tipo válido.")
-        
+        self.business = Business("", self.estoque)
+
     def tela_info_funcionamento(self) -> None:
         self.print("\n[FUNCIONAMENTO DO SISTEMA]")
         self.print("O estoque mantém um catálogo de produtos, assim como uma relação das")
@@ -94,11 +108,13 @@ class CLI:
             self.print("3) Comprar produtos")
             self.print("4) Vender produtos")
             self.print("5) Consultar produtos")
-            self.print("6) Ajuda")
+            self.print("6) Catálogo")
+            self.print("7) Ajuda")
+
 
             opcao = self.input().strip()
             match opcao:
-                case "1" | "2" | "3" | "4" | "5" | "6":
+                case "1" | "2" | "3" | "4" | "5" | "6" | "7":
                     opcao = int(opcao)
                     break
                 case _:
@@ -121,9 +137,70 @@ class CLI:
             "   existir no catálogo, e o estoque precisa ter unidades o suficiente.\n"
             "5) Consultar produtos: Mostra as informações do produto armazenadas no catálogo e\n"
             "   no estoque.\n"
-            "6) Ajuda: exibe este painel de ajuda."
+            "6) Catálogo: Exibe todos os produtos do estoque.\n"
+            "7) Ajuda: Exibe este painel de ajuda."
         )
         self.input("Pressione ENTER para prosseguir...")
+
+    def tela_adicionar_produtos(self):
+        self.print("\n[ADICIONAR PRODUTOS AO CATÁLOGO - MENU PRINCIPAL]")
+        self.print("Escreva o nome do produto:\n")
+        nome = self.input()
+        if nome == "":
+            raise ValueError ("O nome do produto não pode ser vazio")
+        self.print("Escreva a marca do produto")
+        marca = self.input()
+        if marca == "":
+            raise ValueError ("A marca do produto não pode ser vazia")
+        self.print("Escreva a categoria do produto:\n")
+        categoria = self.input()
+        if categoria == "":
+            raise ValueError ("A categoria do produto não pode ser vazia")
+        self.print("Aplique o preço do produto:\n")
+        preco = float(self.input())
+        if preco == "":
+            raise ValueError ("O preço do produto não pode ser vazio")
+        self.print("Escreva o desconto do produto:\n")
+        desconto = self.input()
+        produto = Produto(nome, preco, marca, categoria)
+        if desconto != "":
+            produto.aplicar_desconto(float(desconto))
+        print("Produto adicionado com sucesso!")
+        self.print(produto)
+        self.business.buy_produto(produto)
+
+    def tela_remover_produtos(self):
+        self.print("\n[REMOVER PRODUTOS DO CATÁLOGO - MENU PRINCIPAL]")
+
+    def tela_comprar_produtos(self):
+        self.print("\n[COMPRAR PRODUTOS - MENU PRINCIPAL]")
+        self.print("Escreva o nome do produto:\n")
+        nome = self.input()
+        if nome == "":
+            raise ValueError ("O nome do produto não pode ser vazio")
+        self.print("Escreva a marca do produto")
+        marca = self.input()
+        if marca == "":
+            raise ValueError ("A marca do produto não pode ser vazia")
+        self.print("Escreva a categoria do produto:\n")
+        categoria = self.input()
+        if categoria == "":
+            raise ValueError ("A categoria do produto não pode ser vazia")
+        self.print("Aplique o preço do produto:\n")
+        preco = float(self.input())
+        if preco == "":
+            raise ValueError ("O preço do produto não pode ser vazio")
+        self.print("Escreva o desconto do produto:\n")
+        desconto = self.input()
+        produto = Produto(nome, preco, marca, categoria)
+        if desconto != "":
+            produto.aplicar_desconto(float(desconto))
+        print("Produto comprado com sucesso!")
+        self.print(produto)
+
+    def tela_vender_produtos(self):
+        self.print("\n[REMOVER PRODUTOS DO CATÁLOGO - MENU PRINCIPAL]")
+
     
     # def tela_consultar_produto(self):
     #     while True:
