@@ -38,6 +38,9 @@ class Business():
     def get_produto_info(self, nome) -> Produto | None:
         return self._estoque.get_produto_info(nome)
     
+    def listar_estoque(self) -> list[str]:
+        return [str(produto) for produto in self._estoque.get_estoque()]
+    
     def calculate_buy_price(self, preco) -> float:
         # O preço de compra é o preço de venda + a margem
         return -(preco * (1 - self._margin))
