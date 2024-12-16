@@ -20,7 +20,7 @@ class Produto:
 
     def __str__(self):
         marcas_str = ', '.join(self.marcas) if self.marcas else "Nenhuma marca"
-        return f'{self.nome} - R$ {self.preco:.2f} - Categoria: {self.categoria} - Marcas: {marcas_str}'
+        return f'Nome: {self.nome} - Preço: R$ {self.preco:.2f} - Categoria: {self.categoria} - Marcas: {marcas_str}'
     
     def __repr__(self):
         return f'Produto(nome={self.nome}, preco={self.preco:.2f}, categoria={self.categoria}, marcas={self.marcas})'
