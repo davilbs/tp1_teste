@@ -15,7 +15,7 @@ class CLI:
     
     def input(self, prompt: object = "> ") -> str:
         self.print(prompt, sep='', end='', flush=True)
-        return self.infile.readline()
+        return self.infile.readline()[:-1]
 
     def start(self):
         try:
@@ -125,10 +125,23 @@ class CLI:
         )
         self.input("Pressione ENTER para prosseguir...")
     
-    # def tela_consultar_produto(self):
-    #     while True:
-    #         self.print("\n[CONSULTAR PRODUTO]")
-    #         self.print("Digite o nome do produto que deseja consultar, :")
-    #         nome = self.input()
-    #         self.estoque.get_produto_info(nome)
+    def tela_consultar_produto(self):
+        while True:
+            self.print("\n[CONSULTAR PRODUTO]")
+            self.print("Digite o nome do produto que deseja consultar, ou pressione ENTER para voltar:")
+            nome = self.input()
+            match nome:
+                case "":
+                    break
+                case _:
+                    produto = self.estoque.get_produto_info(nome)
+                    if produto is None:
+                        self.print("O produto procurado não existe no catálogo.")
+                        continue
+
+                    self.print(str(produto))
+                    qtd = self.estoque.get_produto_amount(produto)
+                    self.print(f"Quantidade em estoque: {qtd}")
+                    
+
 

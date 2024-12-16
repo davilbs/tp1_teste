@@ -48,3 +48,14 @@ class TestCLI(unittest.TestCase):
     def test_handle_criacao_estoque_valor_invalido(self):
         with self.assertRaises(Exception):
             self.CLI.handle_criacao_estoque(5)
+    
+    def test_tela_consultar_produto_inexistente(self):
+        self.input.writelines(["Arroz", ""])
+        self.input.seek(0)
+
+        self.CLI.handle_criacao_estoque(1)
+        self.CLI.tela_consultar_produto()
+        saida = self.output.getvalue()
+
+        self.assertGreater(saida.find("O produto procurado não existe no catálogo."), -1)
+
