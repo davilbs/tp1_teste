@@ -9,6 +9,9 @@ class Business():
         self._margin = margin
         self.historico = []
         self.desconto = 0
+    
+    def set_estoque(self, estoque: Estoque):
+        self._estoque = Estoque()
 
     def calculate_profit(self) -> float:
         profit = 0
