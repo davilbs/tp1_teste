@@ -38,3 +38,30 @@ class TestBusiness(unittest.TestCase):
     def test_sell_produto_with_no_stock(self):
         business = Business('Loja de vassouras', estoque=Estoque())
         self.assertFalse(business.sell_produto('Vassoura', 5))
+
+    def test_calculate_profit(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        produto = Produto('Vassoura', 10)
+        business.buy_produto(produto, 10)
+        business.sell_produto('Vassoura', 5)
+        self.assertEqual(business.calculate_profit(), -40)
+
+    def test_set_desconto(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        business.set_desconto(10)
+        self.assertEqual(business.desconto, 10)
+
+    def test_set_desconto_invalid(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        with self.assertRaises(ValueError):
+            business.set_desconto(-10)
+    
+    def test_alterar_nome(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        business.alterar_nome('Loja de vassouras LTDA')
+        self.assertEqual(business.nome, 'Loja de vassouras LTDA')
+
+    def test_alterar_nome_invalid(self):
+        business = Business('Loja de vassouras', estoque=Estoque())
+        with self.assertRaises(ValueError):
+            business.alterar_nome('')
