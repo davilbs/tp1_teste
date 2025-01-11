@@ -11,7 +11,7 @@ class Business():
         self.desconto = 0
     
     def set_estoque(self, estoque: Estoque):
-        self._estoque = Estoque()
+        self._estoque = estoque
 
     def calculate_profit(self) -> float:
         profit = 0
@@ -83,3 +83,6 @@ class Business():
         if self._estoque.sell_produto(nome, amount):
             return self.compute_transaction(nome, amount, 'sell')
         return False
+    
+    def remove_produto(self, nome: str):
+        return False # Esqueleto temporário
