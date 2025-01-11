@@ -79,7 +79,7 @@ class Business():
     def get_produto_amount(self, nome: str) -> int:
         return self._estoque.get_produto_amount(nome)
     
-    def sell_produto(self, nome: str, amount: int):
+    def sell_produto(self, nome: str, amount: int, desconto: float):
         if self._estoque.sell_produto(nome, amount):
             return self.compute_transaction(nome, amount, 'sell')
         return False

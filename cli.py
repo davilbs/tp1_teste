@@ -260,7 +260,7 @@ class CLI:
             raise ValueError ("O nome do produto não pode ser vazio")
         
         # Se o produto não foi adicionado, coleta os dados para criá-lo.
-        produto = self.business.get_produto_info()
+        produto = self.business.get_produto_info(nome)
         if produto is None:
             self.print("\nEscreva a marca do produto:")
             marca = self.input()
@@ -308,6 +308,8 @@ class CLI:
             return
         
         self.print(produto)
+        qtd_existente = self.business.get_produto_amount(nome)
+        self.print(f"Quantidade em estoque: {qtd_existente}")
 
         self.print("\nAplique o desconto do produto (deixe vazio para não aplicar desconto):")
         desconto = self.input()
