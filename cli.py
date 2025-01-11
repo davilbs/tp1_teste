@@ -329,7 +329,6 @@ class CLI:
         else:
             self.print("[ERRO] Houve um erro ao vender o produto - operação não realizada")
 
-
     def tela_consultar_produto(self) -> bool:
         try:
             while True:
