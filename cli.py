@@ -37,6 +37,13 @@ class CLI:
         try:
             self.print("Seja bem vindo ao sistema de gestão de estoques. Pressione Ctrl+C a qualquer\n"
                        "momento para encerrar o programa.\n")
+            
+            nome = self.tela_escolher_nome()
+            # Se o nome é None, é porque ele teve um EOFError - chegou ao fim da entrada sem ler um valor válido.
+            if nome is None:
+                self.print("\nEncerrando...")
+                return
+
             tipo_estoque = self.tela_escolher_tipo_estoque()
             # Se o tipo_estoque é None, é porque ele teve um EOFError - chegou ao fim da entrada sem ler um valor válido.
             if tipo_estoque is None:
@@ -55,12 +62,20 @@ class CLI:
                         except ValueError as ex:
                             self.print("[ERRO]", *ex.args)
                     case 2:
-                        self.tela_remover_produtos()
+                        try:
+                            self.tela_remover_produtos()
+                        except ValueError as ex:
+                            self.print("[ERRO]", *ex.args) 
                     case 3:
                         try:
                             self.tela_comprar_produtos()
                         except ValueError as ex:
-                            self.print("[ERRO]", *ex.args)    
+                            self.print("[ERRO]", *ex.args) 
+                    case 4:
+                        try:
+                            self.tela_vender_produtos()
+                        except ValueError as ex:
+                            self.print("[ERRO]", *ex.args) 
                     case 5:
                         sucesso = self.tela_consultar_produto()
                         if not sucesso:
@@ -83,6 +98,28 @@ class CLI:
             self.print("\nEncerrando...")
             return
             
+
+    def tela_escolher_nome(self) -> str | None:
+        nome = None
+
+        try:
+            while True:
+                self.print("\n[NOME DO NEGÓCIO]")
+                self.print("Insira o nome do seu negócio:")
+                
+                string = self.input().strip()
+                match string:
+                    case "":
+                        self.print("O nome do negócio não pode ficar vazio")
+                        continue
+                    case _:
+                        nome = string
+                        break
+
+        except EOFError:
+            return None
+        
+        return nome
 
     def tela_escolher_tipo_estoque(self) -> int | None:
         tipo = None
@@ -182,24 +219,19 @@ class CLI:
             raise ValueError ("A categoria do produto não pode ser vazia")
         
         self.print("Aplique o preço de venda do produto:\n")
-        preco = float(self.input())
+        preco = self.input()
         if preco == "":
             raise ValueError ("O preço do produto não pode ser vazio")
+        preco = float(preco)
         
         produto = Produto(nome, preco, marca, categoria)
-
-        self.print("Escreva o desconto do produto (deixe vazio para não aplicar desconto): \n")
-        desconto = self.input()
-        if desconto != "":
-            produto.aplicar_desconto(float(desconto))
-
-        if self.business.buy_produto(produto):
+        if self.business.buy_produto(produto, 0):
             self.print(produto)
-            print("Produto adicionado com sucesso!")
+            self.print("Produto adicionado com sucesso!")
         else:
-            print("[ERRO] Houve um erro ao adicionar o produto ao estoque.")
+            self.print("[ERRO] Houve um erro ao adicionar o produto ao estoque.")
 
-
+    # Remove um produto do catálogo, para que não possa mais ser vendido.
     def tela_remover_produtos(self):
         self.print("\n[REMOVER PRODUTOS DO CATÁLOGO]")
 
@@ -210,7 +242,7 @@ class CLI:
         
         produto = self.business.get_produto_info(nome)
         if produto is None:
-            self.print("[ERRO] O produto não existe no estoque, e não pôde ser removido")
+            self.print("[ERRO] O produto não existe no estoque.")
             return
         
         self.print(produto)
@@ -222,43 +254,45 @@ class CLI:
     def tela_comprar_produtos(self):
         self.print("\n[COMPRAR PRODUTOS]")
 
-        self.print("Escreva o nome do produto:")
+        self.print("\nEscreva o nome do produto:")
         nome = self.input()
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
         
-        self.print("\nEscreva a marca do produto")
-        marca = self.input()
-        if marca == "":
-            raise ValueError ("A marca do produto não pode ser vazia")
+        # Se o produto não foi adicionado, coleta os dados para criá-lo.
+        produto = self.business.get_produto_info()
+        if produto is None:
+            self.print("\nEscreva a marca do produto:")
+            marca = self.input()
+            if marca == "":
+                raise ValueError ("A marca do produto não pode ser vazia")
+            
+            self.print("\nEscreva a categoria do produto:")
+            categoria = self.input()
+            if categoria == "":
+                raise ValueError ("A categoria do produto não pode ser vazia")
+            
+            self.print("\nAplique o preço de venda do produto:")
+            preco = self.input()
+            if preco == "":
+                raise ValueError ("O preço do produto não pode ser vazio")
+            preco = float(preco)
+            
+            produto = Produto(nome, preco, marca, categoria)
         
-        self.print("\nEscreva a categoria do produto:")
-        categoria = self.input()
-        if categoria == "":
-            raise ValueError ("A categoria do produto não pode ser vazia")
-        
-        self.print("\nAplique o preço do produto:")
-        preco = float(self.input())
-        if preco == "":
-            raise ValueError ("O preço do produto não pode ser vazio")
-        
-        self.print("\nEscreva o desconto do produto:")
-        desconto = self.input()
-        produto = Produto(nome, preco, marca, categoria)
-        if desconto != "":
-            produto.aplicar_desconto(float(desconto))
-
         self.print(produto)
 
         self.print("\nDigite quantas unidades do produto serão compradas:")
-        qtd = int(self.input())
+        qtd = self.input()
         if qtd == "":
             raise ValueError ("O número de itens não pode ser vazio")
+        qtd = int(qtd)
         
-        if self.business.buy_produto(produto, qtd):
+        sucesso = self.business.buy_produto(produto, qtd)
+        if sucesso:
             self.print("Produto comprado com sucesso!")
         else:
-            self.print("Houve um erro ao comprar o produto - operação não realizada")
+            self.print("[ERRO] Houve um erro ao comprar o produto - operação não realizada")
 
     def tela_vender_produtos(self):
         self.print("\n[VENDER PRODUTOS]")
@@ -268,38 +302,30 @@ class CLI:
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
         
-        self.print("\nEscreva a marca do produto")
-        marca = self.input()
-        if marca == "":
-            raise ValueError ("A marca do produto não pode ser vazia")
+        produto = self.business.get_produto_info(nome)
+        if produto is None:
+            self.print("[ERRO] O produto não existe no estoque.")
+            return
         
-        self.print("\nEscreva a categoria do produto:")
-        categoria = self.input()
-        if categoria == "":
-            raise ValueError ("A categoria do produto não pode ser vazia")
-        
-        self.print("\nAplique o preço do produto:")
-        preco = float(self.input())
-        if preco == "":
-            raise ValueError ("O preço do produto não pode ser vazio")
-        
-        self.print("\nEscreva o desconto do produto:")
-        desconto = self.input()
-        produto = Produto(nome, preco, marca, categoria)
-        if desconto != "":
-            produto.aplicar_desconto(float(desconto))
-
         self.print(produto)
 
+        self.print("\nAplique o desconto do produto (deixe vazio para não aplicar desconto):")
+        desconto = self.input()
+        if desconto != "":
+            desconto = float(desconto)
+        else:
+            desconto = 0.0
+
         self.print("\nDigite quantas unidades do produto serão vendidas:")
-        qtd = int(self.input())
+        qtd = self.input()
         if qtd == "":
             raise ValueError ("O número de itens não pode ser vazio")
+        qtd = int(qtd)
         
-        if self.business.sell_produto(produto.nome, qtd):
+        if self.business.sell_produto(produto.nome, qtd, desconto):
             self.print("Produto vendido com sucesso!")
         else:
-            self.print("Houve um erro ao vender o produto - operação não realizada")
+            self.print("[ERRO] Houve um erro ao vender o produto - operação não realizada")
 
 
     def tela_consultar_produto(self) -> bool:
@@ -340,8 +366,8 @@ class CLI:
             "1) Adicionar produtos ao catálogo: Adiciona um novo produto ao catálogo do\n"
             "   estoque, para que unidades dele possam ser compradas e vendidas.\n"
             "2) Remover produtos do catálogo: Remove um produto do catálogo do estoque.\n"
-            "3) Comprar produtos: Compra unidades de um produto em catálogo para o estoque.\n"
             "   Requer que o produto desejado exista no catálogo.\n"
+            "3) Comprar produtos: Compra unidades de um produto em catálogo para o estoque.\n"
             "4) Vender produtos: Vende unidades de um produto em estoque. O produto precisa\n"
             "   existir no catálogo, e o estoque precisa ter unidades o suficiente.\n"
             "5) Consultar produtos: Mostra as informações do produto armazenadas no catálogo e\n"
