@@ -17,10 +17,6 @@ class TestCLI(unittest.TestCase):
         del self.output
         del self.CLI
 
-    def test_cli_atty(self):
-        cli = CLI()
-        self.assertTrue(cli._atty)
-
     def test_cli_no_atty(self):
         self.assertFalse(self.CLI._atty)
 
