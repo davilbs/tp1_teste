@@ -2,16 +2,16 @@ from estoque import Estoque
 from produto import Produto
 
 class Business():
-    def __init__(self, nome, estoque: Estoque = Estoque(), margin=0.1):
+    def __init__(self, nome, estoque: Estoque = None, margin=0.1):
         self.nome = nome
-        self._estoque = estoque
+        self._estoque = estoque if estoque != None else Estoque()
         self._transactions = []
         self._margin = margin
         self.historico = []
         self.desconto = 0
     
     def set_estoque(self, estoque: Estoque):
-        self._estoque = Estoque()
+        self._estoque = estoque
 
     def calculate_profit(self) -> float:
         profit = 0
@@ -79,7 +79,10 @@ class Business():
     def get_produto_amount(self, nome: str) -> int:
         return self._estoque.get_produto_amount(nome)
     
-    def sell_produto(self, nome: str, amount: int):
+    def sell_produto(self, nome: str, amount: int, desconto: float = 0):
         if self._estoque.sell_produto(nome, amount):
             return self.compute_transaction(nome, amount, 'sell')
         return False
+    
+    def remove_produto(self, nome: str):
+        return False # Esqueleto temporário
