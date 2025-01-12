@@ -2,9 +2,9 @@ from estoque import Estoque
 from produto import Produto
 
 class Business():
-    def __init__(self, nome, estoque: Estoque = Estoque(), margin=0.1):
+    def __init__(self, nome, estoque: Estoque = None, margin=0.1):
         self.nome = nome
-        self._estoque = estoque
+        self._estoque = estoque if estoque != None else Estoque()
         self._transactions = []
         self._margin = margin
         self.historico = []
