@@ -10,13 +10,6 @@ class CLI:
         self.outfile = outfile
         self._atty = self.infile.isatty()
         self.business = Business("")
-
-        if not self._atty:
-            pos = self.infile.tell()
-            self.infile.seek(os.SEEK_END)
-            self._final_pos = self.infile.tell()
-            self._final_pos = self.infile.tell()
-            self.infile.seek(pos)
     
     def print(self, *values: object, sep: str | None =" ", end: str | None = "\n", flush: bool = False) -> None:
         print(*values, sep=sep, end=end, file=self.outfile, flush=flush)
@@ -28,7 +21,12 @@ class CLI:
         self.print(prompt, sep='', end='', flush=True)
 
         if not self._atty:
-            if self.infile.tell() == self._final_pos:
+            pos = self.infile.tell()
+            self.infile.seek(0, os.SEEK_END)
+            final_pos = self.infile.tell()
+            self.infile.seek(pos, os.SEEK_SET)
+
+            if self.infile.tell() == final_pos:
                 raise EOFError
         
         return self.infile.readline()[:-1]
