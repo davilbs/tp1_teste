@@ -5,7 +5,7 @@ from database import search_produto, add_entry_historico
 class Business():
     def __init__(self, nome: str, estoque: Estoque, margin: float = 0.1):
         self.nome = nome
-        self._estoque = estoque
+        self._estoque = estoque if estoque != None else Estoque()
         self._transactions = []
         self._margin = margin
         self.desconto = 0
@@ -84,3 +84,6 @@ class Business():
         if self._estoque.sell_produto(produto_id, amount):
             return self.compute_transaction(produto_id, amount, 'sell', desconto)
         return False
+    
+    def remove_produto(self, nome: str):
+        return False # Esqueleto temporário
