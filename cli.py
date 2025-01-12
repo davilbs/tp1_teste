@@ -112,6 +112,7 @@ class CLI:
                         continue
                     case _:
                         nome = string
+                        self.print(f'Nome escolhido: "{nome}"')
                         break
 
         except EOFError:
@@ -199,24 +200,24 @@ class CLI:
 
     # Adiciona produtos ao catálogo - diferente de comprar um produto para o estoque
     def tela_adicionar_produtos(self):
-        self.print("\n[ADICIONAR PRODUTOS AO CATÁLOGO - MENU PRINCIPAL]")
+        self.print("\n[ADICIONAR PRODUTOS AO CATÁLOGO]")
 
-        self.print("Escreva o nome do produto:\n")
+        self.print("Escreva o nome do produto:")
         nome = self.input()
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
         
-        self.print("Escreva a marca do produto")
+        self.print("\nEscreva a marca do produto")
         marca = self.input()
         if marca == "":
             raise ValueError ("A marca do produto não pode ser vazia")
         
-        self.print("Escreva a categoria do produto:\n")
+        self.print("\nEscreva a categoria do produto:")
         categoria = self.input()
         if categoria == "":
             raise ValueError ("A categoria do produto não pode ser vazia")
         
-        self.print("Aplique o preço de venda do produto:\n")
+        self.print("\nAplique o preço de venda do produto:")
         preco = self.input()
         if preco == "":
             raise ValueError ("O preço do produto não pode ser vazio")
@@ -224,7 +225,7 @@ class CLI:
         
         produto = Produto(nome, preco, marca, categoria)
         if self.business.buy_produto(produto, 0):
-            self.print(produto)
+            self.print(f"\n{produto}")
             self.print("Produto adicionado com sucesso!")
         else:
             self.print("[ERRO] Houve um erro ao adicionar o produto ao estoque.")
@@ -233,7 +234,7 @@ class CLI:
     def tela_remover_produtos(self):
         self.print("\n[REMOVER PRODUTOS DO CATÁLOGO]")
 
-        self.print("Escreva o nome do produto:\n")
+        self.print("Escreva o nome do produto:")
         nome = self.input()
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
@@ -243,7 +244,7 @@ class CLI:
             self.print("[ERRO] O produto não existe no estoque.")
             return
         
-        self.print(produto)
+        self.print(f"\n{produto}")
         if self.business.remove_produto(produto.nome):
             self.print("Produto removido com sucesso")
         else:
@@ -252,7 +253,7 @@ class CLI:
     def tela_comprar_produtos(self):
         self.print("\n[COMPRAR PRODUTOS]")
 
-        self.print("\nEscreva o nome do produto:")
+        self.print("Escreva o nome do produto:")
         nome = self.input()
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
@@ -278,7 +279,7 @@ class CLI:
             
             produto = Produto(nome, preco, marca, categoria)
         
-        self.print(produto)
+        self.print(f"\n{produto}")
 
         self.print("\nDigite quantas unidades do produto serão compradas:")
         qtd = self.input()
@@ -305,7 +306,7 @@ class CLI:
             self.print("[ERRO] O produto não existe no estoque.")
             return
         
-        self.print(produto)
+        self.print(f"\n{produto}")
         qtd_existente = self.business.get_produto_amount(nome)
         self.print(f"Quantidade em estoque: {qtd_existente}")
 

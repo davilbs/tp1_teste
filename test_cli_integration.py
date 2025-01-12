@@ -44,7 +44,7 @@ class TestCLIIntegration(unittest.TestCase):
         self.CLI.start()
 
         saida = self.output.getvalue()
-        mensagem = "[ADICIONAR PRODUTOS AO CATÁLOGO - MENU PRINCIPAL]"
+        mensagem = "[ADICIONAR PRODUTOS AO CATÁLOGO]"
         self.assertTrue(mensagem in saida)
 
     def test_start_mostra_tela_remover_produtos(self):
