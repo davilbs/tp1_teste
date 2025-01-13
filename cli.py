@@ -5,11 +5,11 @@ import os
 from business import Business
 
 class CLI:
+    business: Business
     def __init__(self, infile=stdin, outfile=stdout) -> None:
         self.infile = infile
         self.outfile = outfile
         self._atty = self.infile.isatty()
-        self.business = Business("")
     
     def print(self, *values: object, sep: str | None =" ", end: str | None = "\n", flush: bool = False) -> None:
         print(*values, sep=sep, end=end, file=self.outfile, flush=flush)
@@ -41,14 +41,14 @@ class CLI:
             if nome is None:
                 self.print("\nEncerrando...")
                 return
-
+            self.business = Business(nome)
             tipo_estoque = self.tela_escolher_tipo_estoque()
             # Se o tipo_estoque é None, é porque ele teve um EOFError - chegou ao fim da entrada sem ler um valor válido.
             if tipo_estoque is None:
                 self.print("\nEncerrando...")
                 return
             
-            self.handle_criacao_estoque(tipo_estoque)
+            self.handle_criacao_estoque(nome, tipo_estoque)
             self.tela_info_funcionamento()
 
             while True:
@@ -149,13 +149,13 @@ class CLI:
         
         return tipo
     
-    def handle_criacao_estoque(self, tipo_estoque: int) -> None:
+    def handle_criacao_estoque(self, nome: str, tipo_estoque: int) -> None:
         match tipo_estoque:
             case 1:
-                self.estoque = Estoque()
+                self.estoque = Estoque(nome)
                 self.is_estoque_alimento = False
             case 2:
-                self.estoque = EstoqueAlimento()
+                self.estoque = EstoqueAlimento(nome)
                 self.is_estoque_alimento = True
             case _:
                 raise Exception("O tipo de estoque recebido não é um tipo válido.")
@@ -253,14 +253,14 @@ class CLI:
     def tela_comprar_produtos(self):
         self.print("\n[COMPRAR PRODUTOS]")
 
-        self.print("Escreva o nome do produto:")
+        self.print("Escreva o nome/id do produto:")
         nome = self.input()
         if nome == "":
             raise ValueError ("O nome do produto não pode ser vazio")
         
         # Se o produto não foi adicionado, coleta os dados para criá-lo.
-        produto = self.business.get_produto_info(nome)
-        if produto is None:
+        produtos = self.business.get_produto_info(nome)
+        if produtos is None:
             self.print("\nEscreva a marca do produto:")
             marca = self.input()
             if marca == "":
@@ -278,6 +278,14 @@ class CLI:
             preco = float(preco)
             
             produto = Produto(nome, preco, marca, categoria)
+        elif len(produtos) > 1:
+            self.print("\nForam encontrados os seguintes produtos:")
+            for resultado in produtos:
+                self.print(f"\n{resultado}")
+            self.print("\nPor favor, especifique o id do produto desejado.")
+            return
+        else:
+            produto = produtos[0]
         
         self.print(f"\n{produto}")
 
@@ -296,18 +304,27 @@ class CLI:
     def tela_vender_produtos(self):
         self.print("\n[VENDER PRODUTOS]")
 
-        self.print("Escreva o nome do produto:")
-        nome = self.input()
-        if nome == "":
-            raise ValueError ("O nome do produto não pode ser vazio")
+        self.print("Escreva o nome/id do produto:")
+        entrada = self.input()
+        if entrada == "":
+            raise ValueError ("O nome/id do produto não pode ser vazio")
         
-        produto = self.business.get_produto_info(nome)
-        if produto is None:
+        produtos = self.business.get_produto_info(entrada)
+        
+        if produtos is None:
             self.print("[ERRO] O produto não existe no estoque.")
             return
+        if len(produtos) > 1:
+            self.print("\nForam encontrados os seguintes produtos:")
+            for resultado in produtos:
+                self.print(f"\n{resultado}")
+            self.print("\nPor favor, especifique o id do produto desejado.")
+            return
+        else:
+            produto = produtos[0]
         
         self.print(f"\n{produto}")
-        qtd_existente = self.business.get_produto_amount(nome)
+        qtd_existente = self.business.get_produto_amount(produto.id)
         self.print(f"Quantidade em estoque: {qtd_existente}")
 
         self.print("\nAplique o desconto do produto (deixe vazio para não aplicar desconto):")
@@ -323,7 +340,7 @@ class CLI:
             raise ValueError ("O número de itens não pode ser vazio")
         qtd = int(qtd)
         
-        if self.business.sell_produto(produto.nome, qtd, desconto):
+        if self.business.sell_produto(produto.id, qtd, desconto):
             self.print("Produto vendido com sucesso!")
         else:
             self.print("[ERRO] Houve um erro ao vender o produto - operação não realizada")
@@ -338,14 +355,15 @@ class CLI:
                     case "":
                         break
                     case _:
-                        produto = self.business.get_produto_info(nome)
-                        if produto is None:
+                        produtos = self.business.get_produto_info(nome)
+                        if produtos is None:
                             self.print("O produto procurado não existe no catálogo.", flush=True)
                             continue
 
-                        self.print(str(produto))
-                        qtd = self.business.get_produto_amount(nome)
-                        self.print(f"Quantidade em estoque: {qtd}")
+                        for produto in produtos:
+                            self.print(produto)
+                            qtd = self.business.get_produto_amount(nome)
+                            self.print(f"Quantidade em estoque: {qtd}")
             return True
         except EOFError:
             return False                 

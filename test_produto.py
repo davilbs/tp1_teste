@@ -28,7 +28,7 @@ class TestProduto(unittest.TestCase):
 
     def test_aplica_desconto(self):
         produto = Produto('Vassoura', 10)
-        produto.aplicar_desconto(10)
+        produto.aplicar_desconto(0.1)
         self.assertEqual(produto.preco, 9)
         self.assertEqual(produto.historico, ['Desconto de 10% aplicado. Preço final: R$ 9.00'])
 
@@ -39,25 +39,20 @@ class TestProduto(unittest.TestCase):
 
     def test_restaurar_preco(self):
         produto = Produto('Vassoura', 10)
-        produto.aplicar_desconto(10)
+        produto.aplicar_desconto(0.1)
         produto.restaurar_preco(10)
         self.assertEqual(produto.preco, 10)
         self.assertEqual(produto.historico, ['Desconto de 10% aplicado. Preço final: R$ 9.00', 'Preço restaurado para R$ 10.00'])
 
     def test_add_marca(self):
         produto = Produto('Vassoura', 10)
-        produto.add_marca('Marca1')
-        self.assertEqual(produto.marcas, {'Marca1'})
-        self.assertEqual(produto.historico, ['Marca Marca1 adicionada ao produto'])
+        produto.set_marca('Marca1')
+        self.assertEqual(produto.marca, 'Marca1')
+        self.assertEqual(produto.historico, ['Marca Marca1 definida para o produto'])
 
     def test_remove_marca(self):
         produto = Produto('Vassoura', 10)
-        produto.add_marca('Marca1')
-        produto.remove_marca('Marca1')
-        self.assertEqual(produto.marcas, set())
-        self.assertEqual(produto.historico, ['Marca Marca1 adicionada ao produto', 'Marca Marca1 removida do produto'])
-
-    def test_remove_marca_not_in_set(self):
-        produto = Produto('Vassoura', 10)
-        with self.assertRaises(KeyError):
-            produto.remove_marca('Marca1')
+        produto.set_marca('Marca1')
+        produto.remove_marca()
+        self.assertEqual(produto.marca, "Nenhuma marca")
+        self.assertEqual(produto.historico, ['Marca Marca1 definida para o produto', 'Marca Marca1 removida do produto'])
